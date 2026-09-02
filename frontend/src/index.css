@@ -184,6 +184,50 @@ a {
   color: var(--text);
 }
 
+/* Form primitives -------------------------------------------------------- */
+
+.field {
+  display: block;
+}
+
+.field__label {
+  display: block;
+  margin-bottom: var(--space-1);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.field__input,
+.field__textarea {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9375rem;
+}
+
+.field__textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.field__input--invalid,
+.field__textarea--invalid {
+  border-color: var(--danger);
+}
+
+.field__error {
+  margin-top: var(--space-1);
+  color: var(--danger);
+  font-size: 0.8125rem;
+}
+
 /* Loading / error / empty ------------------------------------------------ */
 
 .state {

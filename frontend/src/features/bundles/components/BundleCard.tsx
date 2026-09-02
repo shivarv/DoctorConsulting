@@ -11,7 +11,7 @@ export function BundleCard({ bundle }: BundleCardProps) {
   const { slug, title, description, level, thumbnail, videoCount } = bundle
 
   return (
-    <Link className="bundle-card" to={`/bundles/${slug}`}>
+    <Link className="bundle-card" to={`/shop/${slug}`}>
       <div className="bundle-card__media">
         {thumbnail ? (
           <img src={thumbnail} alt="" loading="lazy" />

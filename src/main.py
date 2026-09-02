@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.api.handlers import bundles
+from src.api.handlers import bundles, doctors
 from src.core import config
 
-app = FastAPI(title="Yoga Bundles API", version="0.1.0")
+app = FastAPI(title="DoctorConsulting API", version="0.2.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -14,6 +14,7 @@ app.add_middleware(
 )
 
 app.include_router(bundles.router)
+app.include_router(doctors.router)
 
 
 @app.get("/health", tags=["meta"])

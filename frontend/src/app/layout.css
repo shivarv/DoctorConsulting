@@ -1,0 +1,137 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app__body {
+  flex: 1;
+}
+
+/* Header ------------------------------------------------------------------ */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.site-header__inner {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-6);
+}
+
+.brand {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  color: inherit;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand__mark {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 55%, white));
+}
+
+.site-nav {
+  display: flex;
+  flex: 1;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.site-nav__link {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.site-nav__link:hover {
+  background-color: var(--surface-hover);
+  color: var(--text);
+}
+
+.site-nav__link--active {
+  color: var(--text);
+  font-weight: 600;
+  background-color: var(--surface-hover);
+}
+
+.button--cta {
+  margin-top: 0;
+  white-space: nowrap;
+}
+
+.button--block {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.site-header__menu {
+  display: none;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: none;
+  cursor: pointer;
+}
+
+/* Footer ------------------------------------------------------------------ */
+
+.app__footer {
+  margin-top: var(--space-12);
+  padding: var(--space-6);
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* Small screens ----------------------------------------------------------- */
+
+@media (max-width: 60rem) {
+  .site-header__inner {
+    flex-wrap: wrap;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .site-header__menu {
+    display: block;
+    order: 2;
+    margin-left: auto;
+  }
+
+  .button--cta {
+    order: 3;
+  }
+
+  .site-nav {
+    display: none;
+    order: 4;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    padding-top: var(--space-2);
+  }
+
+  .site-nav--open {
+    display: flex;
+  }
+}

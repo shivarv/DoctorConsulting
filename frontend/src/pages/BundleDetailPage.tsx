@@ -29,7 +29,7 @@ export function BundleDetailPage() {
   if (error) {
     return (
       <main className="page">
-        <Link className="back-link" to="/bundles">
+        <Link className="back-link" to="/shop">
           ← All bundles
         </Link>
         {error.status === 404 ? (
@@ -51,7 +51,7 @@ export function BundleDetailPage() {
 
   return (
     <main className="page">
-      <Link className="back-link" to="/bundles">
+      <Link className="back-link" to="/shop">
         ← All bundles
       </Link>
 

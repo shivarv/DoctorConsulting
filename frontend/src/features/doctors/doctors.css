@@ -1,0 +1,364 @@
+.doctors-layout {
+  display: grid;
+  grid-template-columns: 17rem minmax(0, 1fr);
+  gap: var(--space-8);
+  align-items: start;
+}
+
+/* Filters ----------------------------------------------------------------- */
+
+.doctor-filters__panel {
+  position: sticky;
+  top: 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+}
+
+.doctor-filters__head {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.doctor-filters__title {
+  font-size: 1rem;
+  font-weight: 640;
+}
+
+.doctor-filters__toggle {
+  display: none;
+  gap: var(--space-2);
+  align-items: center;
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.doctor-filters__badge {
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background-color: var(--accent);
+  color: var(--accent-contrast);
+  font-size: 0.75rem;
+}
+
+.doctor-filters__count {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.link-button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.filter-group {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.filter-group__title {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.filter-group__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.filter-option {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  padding: 0.3rem 0.4rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.filter-option:hover {
+  background-color: var(--surface-hover);
+}
+
+.filter-option input {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.filter-option__label {
+  flex: 1;
+}
+
+.filter-option__count {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.filter-option--empty {
+  opacity: 0.4;
+}
+
+/* Results ----------------------------------------------------------------- */
+
+.doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: var(--space-4);
+}
+
+.doctor-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.doctor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.doctor-card__photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background-color: var(--surface-hover);
+}
+
+.doctor-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.doctor-card__name {
+  font-size: 1.0625rem;
+  font-weight: 630;
+  line-height: 1.25;
+}
+
+.doctor-card__title {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.chip-tag {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background-color: var(--bg);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.doctor-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.doctor-card__rating {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.doctor-card__reviews {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.doctor-card__foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: var(--space-3);
+}
+
+.doctor-card__fee {
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.doctor-card__cta {
+  color: var(--accent);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+/* Profile ----------------------------------------------------------------- */
+
+.doctor-profile {
+  display: grid;
+  grid-template-columns: 18rem minmax(0, 1fr);
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.doctor-profile__aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.doctor-profile__photo {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius);
+  object-fit: cover;
+  background-color: var(--surface-hover);
+}
+
+.doctor-profile__booking {
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  text-align: center;
+}
+
+.doctor-profile__fee {
+  font-size: 1.375rem;
+  font-weight: 650;
+}
+
+.doctor-profile__fee-unit {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.doctor-profile__availability {
+  margin-top: var(--space-3);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.doctor-profile__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.doctor-profile__rating {
+  font-weight: 600;
+}
+
+.doctor-profile__section {
+  margin-top: var(--space-4);
+}
+
+.doctor-profile__heading {
+  margin-bottom: var(--space-2);
+  font-size: 1rem;
+  font-weight: 640;
+}
+
+.detail-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.detail-list dt {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.detail-list dd {
+  margin: 0.15rem 0 0;
+}
+
+/* Small screens ----------------------------------------------------------- */
+
+@media (max-width: 60rem) {
+  .doctors-layout,
+  .doctor-profile {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .doctor-filters__toggle {
+    display: flex;
+  }
+
+  .doctor-filters__panel {
+    position: static;
+    display: none;
+    margin-top: var(--space-2);
+  }
+
+  .doctor-filters__panel--open {
+    display: flex;
+  }
+
+  .doctor-profile__aside {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .doctor-profile__photo {
+    max-width: 12rem;
+  }
+
+  .doctor-profile__booking {
+    flex: 1;
+  }
+}
+
+@media (max-width: 34rem) {
+  .doctor-profile__aside {
+    flex-direction: column;
+  }
+
+  .doctor-profile__photo {
+    max-width: none;
+  }
+}

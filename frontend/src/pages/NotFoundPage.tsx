@@ -7,8 +7,8 @@ export function NotFoundPage() {
     <main className="page">
       <EmptyState title="Page not found">
         <p>That page does not exist.</p>
-        <Link className="button" to="/bundles">
-          Go to bundles
+        <Link className="button" to="/doctors">
+          Browse doctors
         </Link>
       </EmptyState>
     </main>

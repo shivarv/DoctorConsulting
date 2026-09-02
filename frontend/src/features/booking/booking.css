@@ -1,0 +1,416 @@
+.booking {
+  max-width: 56rem;
+}
+
+.booking__panel {
+  margin-top: var(--space-6);
+  padding: var(--space-6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+}
+
+/* Path -------------------------------------------------------------------- */
+
+.path__list {
+  display: flex;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+}
+
+.path__step {
+  flex: 1;
+  min-width: 0;
+  background-color: var(--surface-hover);
+  /* Chevron. The left notch is filled by the previous step's point. */
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%, 14px 50%);
+  margin-left: -12px;
+}
+
+.path__step:first-child {
+  margin-left: 0;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);
+}
+
+.path__step:last-child {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 14px 50%);
+}
+
+.path__label {
+  display: block;
+  width: 100%;
+  padding: var(--space-3) var(--space-3) var(--space-3) calc(var(--space-3) + 14px);
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.8125rem;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.path__step--done {
+  background-color: color-mix(in srgb, var(--accent) 22%, var(--surface));
+}
+
+.path__step--done .path__label {
+  color: var(--text);
+  cursor: pointer;
+}
+
+.path__step--done .path__label:hover {
+  background-color: color-mix(in srgb, var(--accent) 32%, var(--surface));
+}
+
+.path__step--current {
+  background-color: var(--accent);
+}
+
+.path__step--current .path__label {
+  color: var(--accent-contrast);
+  font-weight: 650;
+}
+
+.path__compact {
+  display: none;
+}
+
+.path__compact-label {
+  margin-bottom: var(--space-2);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.path__bar {
+  height: 6px;
+  border-radius: 999px;
+  background-color: var(--surface-hover);
+  overflow: hidden;
+}
+
+.path__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background-color: var(--accent);
+  transition: width 200ms ease;
+}
+
+/* Steps ------------------------------------------------------------------- */
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.step__title {
+  font-size: 1.125rem;
+  font-weight: 640;
+}
+
+.step__title--spaced {
+  margin-top: var(--space-4);
+}
+
+.step__hint {
+  margin-top: calc(var(--space-2) * -1);
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.step__actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  margin-top: var(--space-6);
+}
+
+.step__actions .button {
+  margin-top: 0;
+}
+
+.button--ghost {
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text);
+}
+
+.button--ghost:hover {
+  background-color: var(--surface-hover);
+  filter: none;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--space-4);
+}
+
+.radio-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.radio-chip {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.radio-chip:has(input:checked) {
+  border-color: var(--accent);
+  background-color: color-mix(in srgb, var(--accent) 14%, transparent);
+  font-weight: 600;
+}
+
+.radio-chip input {
+  accent-color: var(--accent);
+}
+
+/* Doctor picker ----------------------------------------------------------- */
+
+.picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-height: 28rem;
+  overflow-y: auto;
+}
+
+.picker-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.picker-row:hover {
+  background-color: var(--surface-hover);
+}
+
+.picker-row--selected {
+  border-color: var(--accent);
+  background-color: color-mix(in srgb, var(--accent) 12%, var(--surface));
+}
+
+.picker-row__photo {
+  flex: 0 0 3rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: var(--surface-hover);
+}
+
+.picker-row__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.picker-row__name {
+  font-weight: 620;
+}
+
+.picker-row__title {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.picker-row__end {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.picker-row__fee {
+  font-weight: 650;
+}
+
+.picker-row__location {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+/* Date and time ----------------------------------------------------------- */
+
+.date-strip {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+}
+
+.date-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  align-items: center;
+  min-width: 4.25rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  cursor: pointer;
+}
+
+.date-chip:hover {
+  background-color: var(--surface-hover);
+}
+
+.date-chip--selected {
+  border-color: transparent;
+  background-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.date-chip__weekday {
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.date-chip__day {
+  font-weight: 620;
+  white-space: nowrap;
+}
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+  gap: var(--space-2);
+}
+
+.slot {
+  width: 100%;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.slot:hover:not(:disabled) {
+  background-color: var(--surface-hover);
+}
+
+.slot:disabled {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.slot--selected {
+  border-color: transparent;
+  background-color: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 650;
+}
+
+/* Payment and done -------------------------------------------------------- */
+
+.payment-summary {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.payment-summary__row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.payment-summary__row:first-child {
+  border-top: none;
+}
+
+.payment-summary__row--total {
+  background-color: var(--surface-hover);
+  font-weight: 650;
+}
+
+.done-banner {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.done-banner__tick {
+  display: grid;
+  place-items: center;
+  flex: 0 0 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background-color: var(--accent);
+  color: var(--accent-contrast);
+  font-size: 1.375rem;
+}
+
+.done-summary {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.done-summary__muted {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.done-summary__wide {
+  grid-column: 1 / -1;
+}
+
+.done-note {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+/* Small screens ----------------------------------------------------------- */
+
+@media (max-width: 48rem) {
+  .path__list {
+    display: none;
+  }
+
+  .path__compact {
+    display: block;
+  }
+
+  .booking__panel {
+    padding: var(--space-4);
+  }
+
+  .step__actions {
+    flex-direction: column-reverse;
+  }
+
+  .step__actions .button {
+    width: 100%;
+    text-align: center;
+  }
+}
