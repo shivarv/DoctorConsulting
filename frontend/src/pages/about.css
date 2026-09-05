@@ -1,0 +1,52 @@
+/* About page ------------------------------------------------------------- */
+
+.about-section {
+  margin-top: var(--space-12);
+}
+
+.about-section__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.about-section__body {
+  max-width: 44rem;
+  margin-top: var(--space-3);
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.about-locations {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding: 0;
+  list-style: none;
+}
+
+.about-location {
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.about-location__name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.about-location__address {
+  margin-top: var(--space-2);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.about-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
