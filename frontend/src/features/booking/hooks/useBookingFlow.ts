@@ -94,15 +94,19 @@ export function useBookingFlow(initialDoctor: Doctor | null) {
 
   const currentStep = STEPS[stepIndex]
 
+  const advance = () => {
+    const target = Math.min(stepIndex + 1, STEPS.length - 1)
+    setStepIndex(target)
+    setFurthestIndex((furthest) => Math.max(furthest, target))
+  }
+
   const next = () => {
     const found = validate(currentStep.id, draft)
     setErrors(found)
     if (Object.keys(found).length > 0) {
       return
     }
-    const target = Math.min(stepIndex + 1, STEPS.length - 1)
-    setStepIndex(target)
-    setFurthestIndex((furthest) => Math.max(furthest, target))
+    advance()
   }
 
   const back = () => {
@@ -138,7 +142,15 @@ export function useBookingFlow(initialDoctor: Doctor | null) {
     back,
     goTo,
     reset,
-    setDoctor: (doctor: Doctor) => setDraft((current) => ({ ...current, doctor })),
+    // Picking a doctor is the whole of step one, so the click carries straight
+    // on rather than asking for a second confirmation of a choice just made.
+    // It advances directly instead of going through `next`, which would
+    // validate the draft from before this update and find no doctor on it.
+    chooseDoctor: (doctor: Doctor) => {
+      setDraft((current) => ({ ...current, doctor }))
+      setErrors({})
+      advance()
+    },
     setPatientField: (field: keyof PatientDetails, value: string) =>
       setDraft((current) => ({ ...current, patient: { ...current.patient, [field]: value } })),
     setContactField: (field: keyof ContactDetails, value: string) =>

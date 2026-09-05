@@ -36,7 +36,7 @@ export function BookingWizard({ doctors, initialDoctor }: BookingWizardProps) {
             doctors={doctors}
             selectedId={doctor?.id ?? null}
             error={errors.doctor}
-            onSelect={flow.setDoctor}
+            onSelect={flow.chooseDoctor}
           />
         )}
 

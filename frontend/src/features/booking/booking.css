@@ -132,17 +132,6 @@
   margin-top: 0;
 }
 
-.button--ghost {
-  border: 1px solid var(--border);
-  background: none;
-  color: var(--text);
-}
-
-.button--ghost:hover {
-  background-color: var(--surface-hover);
-  filter: none;
-}
-
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));

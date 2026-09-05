@@ -172,6 +172,17 @@ a {
   filter: brightness(1.08);
 }
 
+.button--ghost {
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text);
+}
+
+.button--ghost:hover {
+  background-color: var(--surface-hover);
+  filter: none;
+}
+
 .back-link {
   display: inline-block;
   margin-bottom: var(--space-4);

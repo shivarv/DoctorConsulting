@@ -3,6 +3,8 @@ import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 import '../features/booking/booking.css'
 import '../features/bundles/bundles.css'
 import '../features/doctors/doctors.css'
+import { AboutPage } from '../pages/AboutPage'
+import '../pages/about.css'
 import { BookingPage } from '../pages/BookingPage'
 import { BundleDetailPage } from '../pages/BundleDetailPage'
 import { BundleListPage } from '../pages/BundleListPage'
@@ -25,7 +27,7 @@ export function App() {
       <Route element={<AppLayout />}>
         <Route index element={<Navigate replace to="/about" />} />
 
-        <Route path="/about" element={<PlaceholderPage title="About" />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/doctors" element={<DoctorsPage />} />
         <Route path="/doctors/:doctorId" element={<DoctorDetailPage />} />
         <Route path="/conditions" element={<PlaceholderPage title="Conditions" />} />
