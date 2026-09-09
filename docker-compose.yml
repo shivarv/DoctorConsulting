@@ -1,0 +1,83 @@
+# Development stack: Postgres, the FastAPI backend, the Vite frontend.
+#
+#     docker compose up --build
+#     → frontend  http://localhost:5173
+#     → api       http://localhost:8000
+#
+# Source is bind-mounted and both servers reload, so editing a file on the host
+# takes effect in the container without a rebuild.
+
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: doctorconsulting
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      # Mounted at /var/lib/postgresql, NOT .../data: the postgres:18+ images
+      # place data in a major-version subdirectory (18/docker) so pg_upgrade
+      # can work across it. Mounting .../data directly makes the image refuse
+      # to start.
+      - pgdata:/var/lib/postgresql
+      # Run once, on an empty data directory only. Numbered because the image
+      # executes them in filename order and the grants need the tables first.
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./db/seed_doctors.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      - ./db/roles.sql:/docker-entrypoint-initdb.d/03-roles.sql:ro
+    ports:
+      # 5433 on the host: your machine already runs Postgres on 5432, and
+      # binding it twice would fail. Inside the compose network this is still
+      # 5432, which is what DATABASE_URL below uses.
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d doctorconsulting"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: .
+    environment:
+      # Host is `db`, the service name — compose resolves it on the internal
+      # network. This wins over the .env file on disk, because load_dotenv
+      # does not override variables already set in the environment.
+      DATABASE_URL: postgresql://dc_app:dc_local_dev@db:5432/doctorconsulting
+      # Absolute, so config.py uses it as-is rather than resolving it against
+      # the repo root.
+      VIDEOS_DIR: /app/videos
+      CORS_ORIGINS: http://localhost:5173
+    volumes:
+      - ./src:/app/src
+      # The backend scans the frontend's video folder to build bundles. Those
+      # files are gitignored and live only on your machine, so they are mounted
+      # rather than copied — read-only, since nothing should write to them.
+      - ./frontend/public/videos:/app/videos:ro
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        # Waits for Postgres to accept queries, not merely to start — the
+        # first request would otherwise race the database's initialisation.
+        condition: service_healthy
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+  web:
+    build: ./frontend
+    environment:
+      # Read by the browser, not by the container, so this is a host address:
+      # localhost:8000 is where the api service is published above.
+      VITE_API_BASE_URL: http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      # Keeps the image's node_modules from being hidden by the bind mount
+      # above — the host's copy is built for macOS, the container needs Linux.
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    command: npm run dev -- --host 0.0.0.0
+
+volumes:
+  pgdata:

@@ -175,6 +175,26 @@ name (the old tuple order is gone). Patient details sit on `appointments`, not
 `users` (booker ≠ patient). Doctor tests run real SQL and **skip** when
 Postgres is down. Full rationale in `db/README.md`.
 
+## Docker: `docker-compose.yml` — dev stack, never run yet
+
+Three services: `db` (postgres:18-alpine), `api`, `web`. Both app servers run
+in reload mode with source bind-mounted, so it mirrors the native workflow
+rather than replacing it.
+
+**Docker is not installed on this machine** — the compose file and both
+Dockerfiles are written and the SQL init order is verified, but no image has
+ever been built. Treat it as untested until someone runs `docker compose up
+--build`.
+
+Two things that bite: the container publishes Postgres on **5433** because the
+native install already holds 5432, and the DB init scripts in
+`/docker-entrypoint-initdb.d/` run *only* on a virgin volume — schema edits
+need `docker compose down -v`. Native and Docker coexist because compose sets
+`DATABASE_URL` as a real env var and `load_dotenv` won't override those.
+
+`db/roles.sql` (idempotent `dc_app` creation + grants) was extracted for this
+and works locally too. Full notes in `DOCKER.md`.
+
 ## Tests: `tests/`
 
 Mirrors `src/` (`api/ services/ repositories/`). `conftest.py` builds real

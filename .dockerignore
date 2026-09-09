@@ -1,0 +1,19 @@
+# Keeping the build context small: the venv and video files together are far
+# larger than the code.
+.venv/
+.git/
+.gitignore
+__pycache__/
+*.pyc
+.pytest_cache/
+.claude/
+tests/
+frontend/
+db/
+design/
+.env
+.env.example
+*.md
+Dockerfile
+.dockerignore
+docker-compose.yml
