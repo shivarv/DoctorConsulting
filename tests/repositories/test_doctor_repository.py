@@ -10,8 +10,8 @@ ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 
 
 @pytest.fixture
-def doctors() -> list[Doctor]:
-    return DoctorRepository().list_all()
+def doctors(doctor_repository: DoctorRepository) -> list[Doctor]:
+    return doctor_repository.list_all()
 
 
 def test_repository_is_not_empty(doctors: list[Doctor]) -> None:
@@ -49,8 +49,8 @@ def test_every_doctor_has_a_photo_and_location(doctors: list[Doctor]) -> None:
         assert doctor.available_days, doctor.id
 
 
-def test_get_by_id_finds_and_misses(doctors: list[Doctor]) -> None:
-    repository = DoctorRepository()
-
-    assert repository.get_by_id(doctors[0].id) == doctors[0]
-    assert repository.get_by_id("no-such-doctor") is None
+def test_get_by_id_finds_and_misses(
+    doctor_repository: DoctorRepository, doctors: list[Doctor]
+) -> None:
+    assert doctor_repository.get_by_id(doctors[0].id) == doctors[0]
+    assert doctor_repository.get_by_id("no-such-doctor") is None

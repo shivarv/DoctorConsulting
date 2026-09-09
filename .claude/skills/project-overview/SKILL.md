@@ -11,7 +11,7 @@ data is hardcoded in Python, bundle data is scanned off the filesystem, and
 booking is a client-side wizard that never POSTs. Keep that in mind before
 looking for a persistence layer that doesn't exist.
 
-Last verified: 2026-09-05, branch `feature/show-video-bundles`.
+Last verified: 2026-09-05, branch `setup-postgress-backend`.
 
 ## Running it
 
@@ -95,7 +95,7 @@ from `blake2b(doctor|date|time) % 3 != 0` — a hash, not randomness, so the gri
 is stable across refreshes. `WEEKDAYS` is a hardcoded tuple indexed by
 `date.weekday()` rather than `strftime("%a")`, which is locale-dependent.
 
-**Doctors are 19 hardcoded records** in `doctor_repository.py` with prose bios
+**Doctors are 18 hardcoded records** in `doctor_repository.py` with prose bios
 and randomuser.me placeholder photos. This is the file to replace when a DB
 arrives, and the only one.
 
@@ -147,6 +147,33 @@ doctor id. Nothing is submitted anywhere — "Confirm booking" just advances.
 class names, design tokens as CSS custom properties in `index.css` with a
 `prefers-color-scheme: dark` block. Use the tokens (`--accent`, `--space-4`,
 `--radius`) — no inline styles, no CSS-in-JS.
+
+## Database: `db/` — schema only, nothing reads it yet
+
+Postgres 18 lives at `/Library/PostgreSQL/18` (not on PATH). Local database
+`doctorconsulting` exists, loaded from `db/schema.sql` + `db/seed_doctors.sql`.
+Six tables: `conditions`, `doctors`, `doctor_conditions`, `users`,
+`appointments`, `testimonials`.
+
+**Auth is asymmetric and catches people out.** `pg_hba.conf` is `trust` for the
+Unix socket but `scram-sha-256` for TCP, so `psql -U postgres` needs no password
+while `DATABASE_URL` (TCP via `@localhost`) does. Two roles: `postgres` for
+schema work, `dc_app` (password in gitignored `.env`) for the app — it can
+read/write rows but not alter the schema.
+
+**Doctors come from Postgres; bundles still come from the filesystem.**
+`DoctorRepository` queries these tables — the hardcoded `_DOCTORS` tuple is
+gone, so `/api/doctors` fails without a reachable database. `BundleRepository`
+is unchanged.
+
+`src/db/__init__.py` is the only module importing psycopg: a lazily-opened
+`ConnectionPool` built from `DATABASE_URL`, closed by the lifespan hook in
+`main.py`. Lazy so importing the app never needs a database.
+
+`doctors.id` is the slug, so the move changed no URLs. Doctors now sort by
+name (the old tuple order is gone). Patient details sit on `appointments`, not
+`users` (booker ≠ patient). Doctor tests run real SQL and **skip** when
+Postgres is down. Full rationale in `db/README.md`.
 
 ## Tests: `tests/`
 

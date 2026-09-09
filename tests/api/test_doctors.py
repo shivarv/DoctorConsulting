@@ -1,4 +1,10 @@
+import pytest
 from fastapi.testclient import TestClient
+
+
+@pytest.fixture(autouse=True)
+def _requires_database(database: None) -> None:
+    """These endpoints read from Postgres; the bundle endpoints do not."""
 
 
 def test_list_doctors_returns_summaries(client: TestClient) -> None:

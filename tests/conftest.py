@@ -5,8 +5,10 @@ import pytest
 from fastapi.testclient import TestClient
 
 from src.api.handlers.bundles import get_bundle_service
+from src.db import get_pool
 from src.main import app
 from src.repositories.bundle_repository import BundleRepository
+from src.repositories.doctor_repository import DoctorRepository
 from src.services.bundle_service import BundleService
 
 MakeBundle = Callable[..., Path]
@@ -46,3 +48,23 @@ def client(service: BundleService) -> Iterator[TestClient]:
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
+
+
+@pytest.fixture(scope="session")
+def database() -> None:
+    """Skip, rather than fail, when Postgres is not running.
+
+    The doctor tests are real queries against a real database — that is the
+    point of them — but a missing server is an environment problem, not a
+    failing assertion, and should not look like one.
+    """
+    try:
+        with get_pool().connection() as conn:
+            conn.execute("SELECT 1")
+    except Exception as exc:  # noqa: BLE001 — any failure to reach it will do
+        pytest.skip(f"Postgres is not reachable: {exc}")
+
+
+@pytest.fixture
+def doctor_repository(database: None) -> DoctorRepository:
+    return DoctorRepository()

@@ -23,6 +23,12 @@ def _videos_dir() -> Path:
     return path if path.is_absolute() else REPO_ROOT / path
 
 
+def _database_url() -> str:
+    """Empty when unset — the failure is raised on first use, in `db`, so that
+    importing the app without a database configured still works."""
+    return os.environ.get("DATABASE_URL", "").strip()
+
+
 def _cors_origins() -> list[str]:
     raw = os.environ.get("CORS_ORIGINS", _DEFAULT_CORS_ORIGINS)
     return [origin.strip() for origin in raw.split(",") if origin.strip()]
@@ -30,3 +36,4 @@ def _cors_origins() -> list[str]:
 
 VIDEOS_DIR = _videos_dir()
 CORS_ORIGINS = _cors_origins()
+DATABASE_URL = _database_url()
