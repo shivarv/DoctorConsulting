@@ -4,7 +4,7 @@ Postgres schema and reference data for DoctorConsulting. **The API reads
 doctors from here** — `DoctorRepository` queries these tables, so the server
 will not serve `/api/doctors` without a reachable database.
 
-Bundles are still scanned off the filesystem; only doctors moved.
+Doctors are the only data here; there is nothing else the app reads.
 
 ```
 db/
@@ -170,6 +170,6 @@ database; it falls back to the shared one.
 
 ## Tests
 
-The doctor tests run real queries against this database. If Postgres is not
+Every test runs real queries against this database. If Postgres is not
 running they **skip** rather than fail — a missing server is an environment
-problem, not a failing assertion. The bundle tests never touch Postgres.
+problem, not a failing assertion.

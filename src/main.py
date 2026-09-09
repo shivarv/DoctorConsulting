@@ -4,7 +4,7 @@ from typing import AsyncIterator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.api.handlers import bundles, doctors
+from src.api.handlers import doctors
 from src.core import config
 from src.db import close_pool
 
@@ -17,7 +17,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     close_pool()
 
 
-app = FastAPI(title="DoctorConsulting API", version="0.3.0", lifespan=lifespan)
+app = FastAPI(title="DoctorConsulting API", version="0.4.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,7 +26,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(bundles.router)
 app.include_router(doctors.router)
 
 

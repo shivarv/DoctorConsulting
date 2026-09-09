@@ -105,7 +105,6 @@ Without `-v`, `down` keeps your data.
 |---|---|---|
 | `./src` | `/app/src` | edit Python, uvicorn reloads |
 | `./frontend` | `/app` | edit React, Vite reloads |
-| `./frontend/public/videos` | `/app/videos` (read-only) | the backend scans these to build bundles; they're gitignored, so they must be mounted rather than baked in |
 | `pgdata` volume | `/var/lib/postgresql` | database survives restarts. Not `.../data` — postgres:18+ stores data in a version subdirectory and refuses to start if you mount `data` directly. |
 
 `node_modules` is an anonymous volume so the container keeps its own Linux
@@ -161,14 +160,7 @@ is built, or read at runtime some other way.
 
 Tested on this machine without Docker:
 
-- `db/schema.sql` → `db/seed_doctors.sql` → `db/roles.sql` run cleanly in that
-  order on a virgin database, producing 18 doctors and 12 conditions, with
-  `dc_app` able to SELECT and INSERT but not TRUNCATE.
-- `db/roles.sql` is idempotent across repeat runs.
-- `VIDEOS_DIR=/app/videos` resolves as an absolute path.
-- Environment variables take precedence over the `.env` file.
-- `docker-compose.yml` parses and has the intended shape.
-
-**Not** tested: the images actually building, and the three containers talking
-to each other. Docker isn't installed here, so that needs your first
-`docker compose up --build`.
+The full stack was built and run: all three containers start, the db init
+scripts produce 18 doctors and 12 conditions, `dc_app` is created as a
+non-superuser, the API serves `/api/doctors` from the container's database,
+and the frontend answers on :5173.

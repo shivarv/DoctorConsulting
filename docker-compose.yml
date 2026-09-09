@@ -43,16 +43,9 @@ services:
       # network. This wins over the .env file on disk, because load_dotenv
       # does not override variables already set in the environment.
       DATABASE_URL: postgresql://dc_app:dc_local_dev@db:5432/doctorconsulting
-      # Absolute, so config.py uses it as-is rather than resolving it against
-      # the repo root.
-      VIDEOS_DIR: /app/videos
       CORS_ORIGINS: http://localhost:5173
     volumes:
       - ./src:/app/src
-      # The backend scans the frontend's video folder to build bundles. Those
-      # files are gitignored and live only on your machine, so they are mounted
-      # rather than copied — read-only, since nothing should write to them.
-      - ./frontend/public/videos:/app/videos:ro
     ports:
       - "8000:8000"
     depends_on:

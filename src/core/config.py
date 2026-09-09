@@ -9,18 +9,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 load_dotenv(REPO_ROOT / ".env")
 
-_DEFAULT_VIDEOS_DIR = REPO_ROOT / "frontend" / "public" / "videos"
 _DEFAULT_CORS_ORIGINS = "http://localhost:5173"
-
-
-def _videos_dir() -> Path:
-    raw = os.environ.get("VIDEOS_DIR", "").strip()
-    if not raw:
-        return _DEFAULT_VIDEOS_DIR
-    path = Path(raw).expanduser()
-    # Relative overrides are resolved against the repo root, not the cwd, so the
-    # server behaves the same whichever directory it is launched from.
-    return path if path.is_absolute() else REPO_ROOT / path
 
 
 def _database_url() -> str:
@@ -34,6 +23,5 @@ def _cors_origins() -> list[str]:
     return [origin.strip() for origin in raw.split(",") if origin.strip()]
 
 
-VIDEOS_DIR = _videos_dir()
 CORS_ORIGINS = _cors_origins()
 DATABASE_URL = _database_url()
