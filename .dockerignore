@@ -1,5 +1,4 @@
-# Keeping the build context small: the venv and video files together are far
-# larger than the code.
+# Keeping the build context small: the venv alone is far larger than the code.
 .venv/
 .git/
 .gitignore

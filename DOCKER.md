@@ -5,25 +5,22 @@ together by `docker-compose.yml`.
 
 ## Prerequisite
 
-Docker is not installed on this machine yet.
-
-**Don't use Homebrew for it.** The cask is broken against Homebrew 5.1.0 here:
-`Cask 'docker-desktop' definition is invalid: undefined method
-'postflight_steps'`. Download it directly instead — this Mac is Apple Silicon
-(arm64):
-
-<https://desktop.docker.com/mac/main/arm64/Docker.dmg>
-
-Open the .dmg, drag Docker to Applications, launch it, and accept the
-permission prompt. Wait for the whale icon in the menu bar to stop animating,
-then confirm the daemon is up:
+Docker Desktop is installed and working here (engine 29.7.2). Confirm the
+daemon is up before anything else — everything below fails without it:
 
 ```bash
 docker info
 ```
 
 A `Cannot connect to the Docker daemon` error means Docker Desktop isn't
-running yet.
+running: launch it and wait for the whale icon in the menu bar to stop
+animating.
+
+If you ever reinstall, **don't use Homebrew.** The cask was broken against
+Homebrew 5.1.0 on this machine (`Cask 'docker-desktop' definition is invalid:
+undefined method 'postflight_steps'`). Download it directly — this Mac is
+Apple Silicon (arm64):
+<https://desktop.docker.com/mac/main/arm64/Docker.dmg>
 
 ## Start
 
@@ -126,35 +123,41 @@ docker compose ps                     # what's running
 Run the test suite inside the container:
 
 ```bash
-docker compose exec api python -m pytest -q
+docker compose exec api python -m pytest -q      # 23 passed
 ```
 
-That needs `tests/` mounted, which it isn't by default — add
-`- ./tests:/app/tests` to the api service's volumes if you want this.
+This works because compose builds the Dockerfile's `dev` stage, which adds
+pytest, and bind-mounts `./tests`. The image that *deploys* is the `prod`
+stage and has neither — see [DEPLOY.md](DEPLOY.md). Running the same command
+against a production image fails with `No module named pytest`, by design.
+
+Natively, the equivalent is `.venv/bin/python -m pytest -q`.
 
 ## Rebuild when dependencies change
 
-Editing source is picked up live. Editing `requirements.txt` or
-`frontend/package.json` is not — those are baked into the image:
+Editing source or tests is picked up live — both are bind-mounted. Editing
+`requirements.txt`, `requirements-dev.txt` or `frontend/package.json` is not:
+those are baked into the image:
 
 ```bash
 docker compose up --build
 ```
 
-## Not set up for production
+## This stack is development only
 
-This is a development stack, deliberately:
+Deliberately:
 
 - Both servers run in reload mode, which is slower and not hardened.
-- The frontend is the Vite dev server, not a static build behind nginx.
+- The frontend is the Vite dev server, not a static build.
 - Passwords are development values committed in `docker-compose.yml`.
 - `POSTGRES_PASSWORD` is `postgres`.
 
-A production setup would need a multi-stage frontend build served by nginx, no
-bind mounts, secrets from the environment rather than the compose file, and
-`--workers` instead of `--reload`. One wrinkle to plan for: Vite inlines
-`VITE_API_BASE_URL` at build time, so the API URL must be known when the image
-is built, or read at runtime some other way.
+Do not point anything public at it. **For deploying, see [DEPLOY.md](DEPLOY.md)**,
+which covers the separate production path: `render.yaml`, the `$PORT`-aware
+`Dockerfile`, `frontend/Dockerfile.prod` (multi-stage, nginx), and how the
+deployed database gets its data — managed Postgres has no equivalent of the
+`docker-entrypoint-initdb.d` hook used below, so `db/bootstrap.sh` pushes the
+schema and seed in from outside.
 
 ## Verified and not
 

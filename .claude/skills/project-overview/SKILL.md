@@ -29,9 +29,11 @@ npm run build   # tsc -b && vite build — the typecheck gate
 npm run lint    # oxlint (not eslint)
 ```
 
-Python 3.13 in `.venv/`. Backend deps in `requirements.txt` (FastAPI, uvicorn,
-pydantic, python-dotenv, pytest, **httpx2** — plain httpx is deprecated for
-Starlette's TestClient). Frontend is React 19 + React Router 7 + Vite 8, and
+Python 3.13 in `.venv/`. Runtime deps in `requirements.txt` (FastAPI, uvicorn,
+pydantic, python-dotenv, psycopg); test deps in `requirements-dev.txt`, which
+includes the runtime set (pytest, **httpx2** — plain httpx is deprecated for
+Starlette's TestClient). Install `requirements-dev.txt` locally; the Dockerfile
+installs only `requirements.txt`, so nothing test-related ships. Frontend is React 19 + React Router 7 + Vite 8, and
 that is the *entire* dependency list — no state library, no data-fetching
 library, no UI kit, no CSS framework. Don't reach for one.
 
@@ -46,8 +48,9 @@ library, no UI kit, no CSS framework. Don't reach for one.
 The video-bundle feature ("Shop") was **deleted** on 2026-09-09 — repository,
 service, handler, schemas, models, frontend feature, both pages, `utils/format.ts`
 and 23 tests. `/shop` is now a `PlaceholderPage`. Don't resurrect it from git
-history expecting it to be wanted. `frontend/public/videos/` still holds the
-user's personal media, deliberately left in place (gitignored, irreplaceable).
+history expecting it to be wanted. `frontend/public/videos/` and its ignore
+rules were removed on 2026-09-10, at the user's request; nothing video-related
+remains.
 
 ### API surface (all GET, all under `/api`)
 
@@ -67,7 +70,7 @@ HTTP (status codes, `HTTPException`), services own rules, repositories own where
 data physically lives. `core/exceptions.py` is deliberately HTTP-free; handlers
 translate domain errors into 404s.
 
-- `models/` — frozen dataclasses (`Doctor`, `Bundle`, `Video`, `DaySlots`).
+- `models/` — frozen dataclasses (`Doctor`, `DaySlots`, `TimeSlot`).
 - `schemas/` — Pydantic response contracts + `to_summary`/`to_detail` mappers.
   Separate from models on purpose. Detail schemas *inherit* summary schemas and
   build via `**to_summary(x).model_dump()`.
@@ -152,10 +155,10 @@ while `DATABASE_URL` (TCP via `@localhost`) does. Two roles: `postgres` for
 schema work, `dc_app` (password in gitignored `.env`) for the app — it can
 read/write rows but not alter the schema.
 
-**Doctors come from Postgres; bundles still come from the filesystem.**
-`DoctorRepository` queries these tables — the hardcoded `_DOCTORS` tuple is
-gone, so `/api/doctors` fails without a reachable database. `BundleRepository`
-is unchanged.
+**All data comes from Postgres.** `DoctorRepository` queries these tables —
+the hardcoded `_DOCTORS` tuple is gone, so `/api/doctors` fails without a
+reachable database. Availability is the one exception: `DoctorService`
+generates it in memory, so it needs no rows.
 
 `src/db/__init__.py` is the only module importing psycopg: a lazily-opened
 `ConnectionPool` built from `DATABASE_URL`, closed by the lifespan hook in

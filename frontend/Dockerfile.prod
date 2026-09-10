@@ -1,0 +1,52 @@
+# Frontend, production: build the bundle, serve it with nginx.
+#
+#     docker build -f frontend/Dockerfile.prod \
+#       --build-arg VITE_API_BASE_URL=https://your-api.example.com \
+#       -t dc-web ./frontend
+#     docker run -p 8080:80 dc-web
+#
+# Not used by the Render blueprint, which builds the same `npm run build`
+# output onto a CDN instead. This exists so the frontend can go anywhere that
+# runs a container — Fly, Cloud Run, Railway, ECS, a plain VPS — without
+# depending on one provider's static hosting.
+#
+# frontend/Dockerfile is the separate dev image and still runs the Vite dev
+# server. Never deploy that one: it ships source maps, has no caching, and is
+# explicitly documented as not hardened for public traffic.
+
+# --- Stage 1: build -------------------------------------------------------
+FROM node:22-alpine AS build
+
+WORKDIR /app
+
+# npm ci needs both files and honours the lockfile exactly.
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+# Vite inlines import.meta.env at build time, so the API URL has to be present
+# now — it cannot be injected when the container starts. A build arg rather
+# than a runtime env var for exactly that reason. The default keeps a bare
+# `docker build` working; a deploy should always pass the real value.
+ARG VITE_API_BASE_URL=http://localhost:8000
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
+RUN npm run build
+
+# --- Stage 2: serve -------------------------------------------------------
+# Only the built assets cross into this stage, so node, npm and node_modules
+# are absent from the final image — a few hundred MB smaller, and nothing in
+# it can execute JavaScript.
+FROM nginx:1.27-alpine
+
+# Placed in templates/ so the image's entrypoint runs envsubst over it and
+# ${PORT} becomes a real value. envsubst only substitutes variables that are
+# actually set in the environment, which is why nginx's own $uri survives.
+COPY nginx.conf /etc/nginx/templates/default.conf.template
+
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Overridden by the platform where one is assigned.
+ENV PORT=80
+EXPOSE 80

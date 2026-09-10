@@ -37,7 +37,13 @@ services:
       retries: 20
 
   api:
-    build: .
+    build:
+      context: .
+      # The dev stage adds pytest; the Dockerfile's last stage (prod) is what
+      # deploys, and deliberately has no test tooling. Without this, the
+      # container gets the lean image and `exec api python -m pytest` fails
+      # with "No module named pytest".
+      target: dev
     environment:
       # Host is `db`, the service name — compose resolves it on the internal
       # network. This wins over the .env file on disk, because load_dotenv
@@ -46,6 +52,9 @@ services:
       CORS_ORIGINS: http://localhost:5173
     volumes:
       - ./src:/app/src
+      # Mounted rather than baked in: .dockerignore keeps tests out of the
+      # image, and a bind mount means an edited test runs without a rebuild.
+      - ./tests:/app/tests
     ports:
       - "8000:8000"
     depends_on:

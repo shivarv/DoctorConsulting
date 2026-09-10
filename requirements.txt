@@ -1,3 +1,7 @@
+# Runtime dependencies — everything the deployed API needs, and nothing else.
+# The Dockerfile installs only this file, so anything added here ships to
+# production. Test and tooling deps go in requirements-dev.txt.
+
 fastapi>=0.115
 uvicorn[standard]>=0.34
 pydantic>=2.9
@@ -6,8 +10,3 @@ python-dotenv>=1.0
 # postgres
 psycopg[binary]>=3.2
 psycopg-pool>=3.2
-
-# testing
-pytest>=8.3
-# Starlette's TestClient wants httpx2; plain httpx is deprecated there.
-httpx2>=2.12

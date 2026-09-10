@@ -1,7 +1,5 @@
 node_modules/
 dist/
 .git/
-# Video files are large and arrive via a bind mount at runtime anyway.
-public/videos/
 .env
 .env.example

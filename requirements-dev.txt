@@ -1,0 +1,13 @@
+# Development and test dependencies.
+#
+#     pip install -r requirements-dev.txt
+#
+# Includes the runtime set, so this one file is all a local environment needs.
+# The Dockerfile deliberately does not install it: pytest and an HTTP client
+# in a deployed image are dead weight and extra CVE surface.
+
+-r requirements.txt
+
+pytest>=8.3
+# Starlette's TestClient wants httpx2; plain httpx is deprecated there.
+httpx2>=2.12
