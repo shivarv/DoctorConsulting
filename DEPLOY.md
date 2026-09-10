@@ -11,7 +11,7 @@ is Render-specific beyond that one file — see [Other platforms](#other-platfor
 
 | Piece | Local | Deployed |
 |---|---|---|
-| Database | `postgres:18-alpine` container, volume `pgdata` | Render managed Postgres 17 |
+| Database | `postgres:18-alpine` container, volume `pgdata` | Render managed Postgres 18 |
 | API | `Dockerfile`, uvicorn `--reload`, bind-mounted source | Same `Dockerfile`, no reload, no mounts |
 | Frontend | `frontend/Dockerfile`, Vite dev server on :5173 | `npm run build` → static files on a CDN |
 

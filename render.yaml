@@ -20,10 +20,10 @@ databases:
     databaseName: doctorconsulting
     user: doctorconsulting
     plan: free
-    # Local runs Postgres 18; Render does not offer it yet. The schema is
-    # portable — GENERATED ALWAYS AS IDENTITY and TEXT[] are both 12+ features
-    # — so 17 costs nothing. Raise this when Render adds 18.
-    postgresMajorVersion: "17"
+    # Matches the postgres:18-alpine used locally, so dev and deployed run the
+    # same major version. Render supports 13-18 and defaults to 18; pinning it
+    # explicitly means a future default change can't silently move you.
+    postgresMajorVersion: "18"
 
 services:
   # ---------------------------------------------------------------------------
