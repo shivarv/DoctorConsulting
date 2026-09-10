@@ -11,8 +11,8 @@ TODAY = date(2026, 9, 1)
 
 
 @pytest.fixture
-def service() -> DoctorService:
-    return DoctorService(DoctorRepository())
+def service(doctor_repository: DoctorRepository) -> DoctorService:
+    return DoctorService(doctor_repository)
 
 
 def test_list_doctors_returns_all(service: DoctorService) -> None:

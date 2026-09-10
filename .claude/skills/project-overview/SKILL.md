@@ -5,13 +5,14 @@ description: Orientation notes for the DoctorConsulting repo — what it does, h
 
 # DoctorConsulting — project map
 
-A doctor-consultation site. FastAPI backend serving read-only JSON, React +
-TypeScript SPA on top. **No database, no auth, no writes anywhere** — doctor
-data is hardcoded in Python, bundle data is scanned off the filesystem, and
-booking is a client-side wizard that never POSTs. Keep that in mind before
-looking for a persistence layer that doesn't exist.
+An online-consultation site for an Ayurvedic practice in Coimbatore (3
+clinics). FastAPI backend serving read-only JSON from Postgres, React +
+TypeScript SPA on top. **No auth, and no writes anywhere** — booking is a
+client-side wizard that never POSTs, so `users` and `appointments` are always
+empty. Doctor records are still allopathic placeholder data; the user knows
+and considers it sample content.
 
-Last verified: 2026-09-05, branch `feature/show-video-bundles`.
+Last verified: 2026-09-09, branch `setup-postgress-backend`.
 
 ## Running it
 
@@ -28,9 +29,11 @@ npm run build   # tsc -b && vite build — the typecheck gate
 npm run lint    # oxlint (not eslint)
 ```
 
-Python 3.13 in `.venv/`. Backend deps in `requirements.txt` (FastAPI, uvicorn,
-pydantic, python-dotenv, pytest, **httpx2** — plain httpx is deprecated for
-Starlette's TestClient). Frontend is React 19 + React Router 7 + Vite 8, and
+Python 3.13 in `.venv/`. Runtime deps in `requirements.txt` (FastAPI, uvicorn,
+pydantic, python-dotenv, psycopg); test deps in `requirements-dev.txt`, which
+includes the runtime set (pytest, **httpx2** — plain httpx is deprecated for
+Starlette's TestClient). Install `requirements-dev.txt` locally; the Dockerfile
+installs only `requirements.txt`, so nothing test-related ships. Frontend is React 19 + React Router 7 + Vite 8, and
 that is the *entire* dependency list — no state library, no data-fetching
 library, no UI kit, no CSS framework. Don't reach for one.
 
@@ -38,16 +41,21 @@ library, no UI kit, no CSS framework. Don't reach for one.
 
 | Feature | Backend | Frontend | Data source |
 |---|---|---|---|
-| **Bundles** (video courses, "Shop") | `repositories/bundle_repository.py` | `features/bundles/` | Filesystem scan |
-| **Doctors** (directory + profiles) | `repositories/doctor_repository.py` | `features/doctors/` | Hardcoded tuple |
+| **Doctors** (directory + profiles) | `repositories/doctor_repository.py` | `features/doctors/` | Postgres |
 | **Booking** (5-step wizard) | availability only, `services/doctor_service.py` | `features/booking/` | Derived, client-side |
+| **About** | — | `pages/AboutPage.tsx` | Static copy |
+
+The video-bundle feature ("Shop") was **deleted** on 2026-09-09 — repository,
+service, handler, schemas, models, frontend feature, both pages, `utils/format.ts`
+and 23 tests. `/shop` is now a `PlaceholderPage`. Don't resurrect it from git
+history expecting it to be wanted. `frontend/public/videos/` and its ignore
+rules were removed on 2026-09-10, at the user's request; nothing video-related
+remains.
 
 ### API surface (all GET, all under `/api`)
 
 ```
 GET /health
-GET /api/bundles                        → list[BundleSummaryOut]
-GET /api/bundles/{slug}                 → BundleDetailOut (404 BundleNotFoundError)
 GET /api/doctors                        → list[DoctorSummaryOut]
 GET /api/doctors/{doctor_id}            → DoctorDetailOut (404 DoctorNotFoundError)
 GET /api/doctors/{doctor_id}/availability → AvailabilityOut
@@ -62,31 +70,18 @@ HTTP (status codes, `HTTPException`), services own rules, repositories own where
 data physically lives. `core/exceptions.py` is deliberately HTTP-free; handlers
 translate domain errors into 404s.
 
-- `models/` — frozen dataclasses (`Doctor`, `Bundle`, `Video`, `DaySlots`).
+- `models/` — frozen dataclasses (`Doctor`, `DaySlots`, `TimeSlot`).
 - `schemas/` — Pydantic response contracts + `to_summary`/`to_detail` mappers.
   Separate from models on purpose. Detail schemas *inherit* summary schemas and
   build via `**to_summary(x).model_dump()`.
 - `core/conditions.py` — the canonical 12 condition slugs → labels. Doctors
   reference conditions by slug; labels are expanded server-side in
   `schemas/doctor.py` so the frontend never owns condition copy.
-- `core/config.py` — `VIDEOS_DIR` and `CORS_ORIGINS` from env, resolved against
-  the repo root (not cwd) so launch directory doesn't matter.
-- Services are injected via FastAPI `Depends` (`get_bundle_service`,
-  `get_doctor_service`) — that's the seam tests override.
+- `core/config.py` — `DATABASE_URL` and `CORS_ORIGINS` from env. `REPO_ROOT`
+  is `parents[2]`, so `.env` loads the same whatever directory you launch from.
+- `DoctorService` is injected via FastAPI `Depends` (`get_doctor_service`).
 
 ### Things that will surprise you
-
-**Bundles come from the filesystem.** `BundleRepository` scans
-`frontend/public/videos/`: each subfolder is a bundle, folder name *is* the
-slug, playable files inside (`.mp4 .webm .mov .m4v`) are its videos. Adding a
-bundle = creating a folder; no restart, no code change. Titles are derived from
-filenames (`01-sun-salutation.mp4` → "Sun Salutation") by stripping the order
-prefix. `_natural_key` sorts embedded numbers numerically so `10-` follows `9-`,
-and tags each part with its kind so int never compares to str. `_BUNDLE_META` is
-an *optional* table of nicer title/description/level for the four known slugs.
-`cover.jpg|jpeg|png|webp` becomes the thumbnail. `get_by_slug` resolves and
-checks `is_relative_to(root)` — path-traversal guard, since the slug is from a
-URL. Full authoring guide: `frontend/public/videos/README.md`.
 
 **Availability is synthesized, not stored.** `DoctorService.list_availability`
 walks 4 weeks starting *tomorrow* (no same-day booking), keeps only the doctor's
@@ -95,9 +90,9 @@ from `blake2b(doctor|date|time) % 3 != 0` — a hash, not randomness, so the gri
 is stable across refreshes. `WEEKDAYS` is a hardcoded tuple indexed by
 `date.weekday()` rather than `strftime("%a")`, which is locale-dependent.
 
-**Doctors are 19 hardcoded records** in `doctor_repository.py` with prose bios
-and randomuser.me placeholder photos. This is the file to replace when a DB
-arrives, and the only one.
+**18 doctors, seeded not authored.** `db/seed_doctors.sql` loaded them; the
+generating Python tuple is gone, so the database is the only source now.
+Photos are randomuser.me placeholders.
 
 ## Frontend: `frontend/src/`
 
@@ -107,10 +102,9 @@ feature. Each feature owns its `components/ hooks/ services/ types.ts *.css`.
 
 ### Routes (`app/App.tsx`)
 
-`/` redirects to `/about`. Real pages: `/doctors`, `/doctors/:doctorId`,
-`/shop`, `/shop/:slug`, `/book`. Placeholders: `/about`, `/conditions`,
-`/testimonials`, `/blog`. `/bundles` and `/bundles/:slug` are legacy redirects
-into `/shop` — bundles moved, keep the old URLs alive.
+`/` redirects to `/about`. Real pages: `/about`, `/doctors`,
+`/doctors/:doctorId`, `/book`. Placeholders: `/conditions`, `/shop`,
+`/testimonials`, `/blog`.
 
 ### Patterns worth matching
 
@@ -120,11 +114,11 @@ into `/shop` — bundles moved, keep the old URLs alive.
 error to render. Every feature service maps **snake_case wire → camelCase app**
 in its own `*Api.ts`; that mapping is the only place the two casings meet.
 
-**The hook shape is identical across `useBundles`, `useBundle`, `useDoctors`,
-`useDoctor`, `useAvailability`** — copy it rather than inventing a new one:
+**The hook shape is identical across `useDoctors`, `useDoctor`,
+`useAvailability`** — copy it rather than inventing a new one:
 `AbortController` in an effect, a single `Settled` state object, and
 `loading`/`error` *derived during render*, never stored. The keyed hooks
-(`useBundle`, `useDoctor`, `useAvailability`) tag `Settled` with the slug/id it
+(`useDoctor`, `useAvailability`) tag `Settled` with the id it
 belongs to, so a stale result is simply "not current" and navigation reports
 loading immediately — no state-resetting effect.
 
@@ -148,12 +142,59 @@ class names, design tokens as CSS custom properties in `index.css` with a
 `prefers-color-scheme: dark` block. Use the tokens (`--accent`, `--space-4`,
 `--radius`) — no inline styles, no CSS-in-JS.
 
+## Database: `db/` — schema only, nothing reads it yet
+
+Postgres 18 lives at `/Library/PostgreSQL/18` (not on PATH). Local database
+`doctorconsulting` exists, loaded from `db/schema.sql` + `db/seed_doctors.sql`.
+Six tables: `conditions`, `doctors`, `doctor_conditions`, `users`,
+`appointments`, `testimonials`.
+
+**Auth is asymmetric and catches people out.** `pg_hba.conf` is `trust` for the
+Unix socket but `scram-sha-256` for TCP, so `psql -U postgres` needs no password
+while `DATABASE_URL` (TCP via `@localhost`) does. Two roles: `postgres` for
+schema work, `dc_app` (password in gitignored `.env`) for the app — it can
+read/write rows but not alter the schema.
+
+**All data comes from Postgres.** `DoctorRepository` queries these tables —
+the hardcoded `_DOCTORS` tuple is gone, so `/api/doctors` fails without a
+reachable database. Availability is the one exception: `DoctorService`
+generates it in memory, so it needs no rows.
+
+`src/db/__init__.py` is the only module importing psycopg: a lazily-opened
+`ConnectionPool` built from `DATABASE_URL`, closed by the lifespan hook in
+`main.py`. Lazy so importing the app never needs a database.
+
+`doctors.id` is the slug, so the move changed no URLs. Doctors now sort by
+name (the old tuple order is gone). Patient details sit on `appointments`, not
+`users` (booker ≠ patient). Doctor tests run real SQL and **skip** when
+Postgres is down. Full rationale in `db/README.md`.
+
+## Docker: `docker-compose.yml` — dev stack, never run yet
+
+Three services: `db` (postgres:18-alpine), `api`, `web`. Both app servers run
+in reload mode with source bind-mounted, so it mirrors the native workflow
+rather than replacing it.
+
+**Docker is not installed on this machine** — the compose file and both
+Dockerfiles are written and the SQL init order is verified, but no image has
+ever been built. Treat it as untested until someone runs `docker compose up
+--build`.
+
+Two things that bite: the container publishes Postgres on **5433** because the
+native install already holds 5432, and the DB init scripts in
+`/docker-entrypoint-initdb.d/` run *only* on a virgin volume — schema edits
+need `docker compose down -v`. Native and Docker coexist because compose sets
+`DATABASE_URL` as a real env var and `load_dotenv` won't override those.
+
+`db/roles.sql` (idempotent `dc_app` creation + grants) was extracted for this
+and works locally too. Full notes in `DOCKER.md`.
+
 ## Tests: `tests/`
 
-Mirrors `src/` (`api/ services/ repositories/`). `conftest.py` builds real
-bundle folders in `tmp_path` via the `make_bundle` fixture and injects the
-service through `app.dependency_overrides[get_bundle_service]` — no mocking of
-the filesystem. Frontend has **no tests**; `npm run build` is the only gate.
+Mirrors `src/` (`api/ services/ repositories/`). **23 tests**, all doctor or
+availability related, all hitting real Postgres — the `database` fixture in
+`conftest.py` skips them when the server is down. Frontend has **no tests**;
+`npm run build` is the only gate.
 
 ## Related skills
 

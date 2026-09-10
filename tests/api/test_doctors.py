@@ -1,4 +1,10 @@
+import pytest
 from fastapi.testclient import TestClient
+
+
+@pytest.fixture(autouse=True)
+def _requires_database(database: None) -> None:
+    """Every doctor endpoint reads from Postgres."""
 
 
 def test_list_doctors_returns_summaries(client: TestClient) -> None:
