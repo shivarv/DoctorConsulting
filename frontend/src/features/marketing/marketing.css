@@ -6,16 +6,29 @@
  * each section owns an inner container instead, so `--tinted` and `--accent`
  * sections can run edge to edge while their text stays on the same measure as
  * the rest of the site.
+ *
+ * Everything is derived from the tokens in index.css via color-mix, so the
+ * whole page follows the existing light/dark schemes with no second palette to
+ * maintain.
  */
 
 .kin-page {
   --kin-measure: 68rem;
+  /* index.css stops at --space-12 (3rem), which is too tight for the vertical
+     gap between full-bleed bands on a long page. */
+  --kin-space-16: 4.5rem;
+  --kin-space-20: 6rem;
+  /* One easing and one duration for every hover on the page, so cards, tags
+     and buttons all respond with the same weight. */
+  --kin-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --kin-duration: 180ms;
+  --kin-hairline: color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 /* Sections ---------------------------------------------------------------- */
 
 .kin-section {
-  padding: var(--space-12) var(--space-6);
+  padding: var(--kin-space-20) var(--space-6);
   /* .site-header is position: sticky, so a section scrolled to via its anchor
      would come to rest underneath it. This reserves the header's height. */
   scroll-margin-top: 4.5rem;
@@ -31,103 +44,172 @@
    :nth-child — the order of sections on the page is not stable enough for a
    positional rule to stay correct through an edit. */
 .kin-section--tinted {
-  background-color: var(--surface-hover);
+  position: relative;
+  background-color: color-mix(in srgb, var(--surface-hover) 70%, var(--bg));
+}
+
+/* A hairline at the top of each tinted band. Cheaper than a border because it
+   fades out at both ends, so the band edge reads as a seam rather than a rule
+   drawn across the viewport. */
+.kin-section--tinted::before,
+.kin-section--accent::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--kin-hairline) 35%, var(--kin-hairline) 65%, transparent);
+  content: '';
 }
 
 .kin-section--accent {
-  background-color: color-mix(in srgb, var(--accent) 12%, var(--bg));
+  position: relative;
+  background:
+    radial-gradient(60rem 22rem at 50% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
+    color-mix(in srgb, var(--accent) 8%, var(--bg));
 }
 
 /* Section headings -------------------------------------------------------- */
 
 .kin-eyebrow {
-  display: block;
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
   color: var(--accent);
   font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
+/* A short accent rule leading into the label — the one repeated motif that
+   ties the seventeen section headers together. */
+.kin-eyebrow::before {
+  width: 1.75rem;
+  height: 2px;
+  flex: none;
+  border-radius: 1px;
+  background-color: currentcolor;
+  content: '';
+}
+
 .kin-heading {
-  max-width: 34rem;
-  margin-top: var(--space-3);
-  font-size: clamp(1.5rem, 3.2vw, 2.125rem);
+  max-width: 36rem;
+  margin-top: var(--space-4);
+  font-size: clamp(1.625rem, 3.4vw, 2.375rem);
   font-weight: 650;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
   text-transform: uppercase;
+  /* Keeps the uppercase headings from looking cramped at large sizes without
+     affecting the lowercase body copy. */
+  text-wrap: balance;
 }
 
 .kin-lead {
   max-width: 44rem;
   margin-top: var(--space-4);
   color: var(--text-muted);
-  font-size: 1.0625rem;
-  line-height: 1.65;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  text-wrap: pretty;
 }
 
 .kin-body {
-  max-width: 44rem;
+  max-width: 42rem;
   margin-top: var(--space-4);
   color: var(--text-muted);
-  line-height: 1.65;
+  line-height: 1.7;
+  text-wrap: pretty;
 }
 
 /* The repeated "ROOT. REVIVE. THRIVE." / "PRACTICAL. PERSONAL. SUSTAINABLE."
    style refrain — a statement, not a heading, so it is not an <h*>. */
 .kin-refrain {
-  margin-top: var(--space-8);
+  margin-top: var(--kin-space-16);
+  padding-top: var(--space-4);
+  border-top: 2px solid var(--kin-hairline);
+  /* Sized to the text so the rule above stops at the end of the phrase rather
+     than running the full measure. */
+  display: table;
   color: var(--text);
-  font-size: 1.125rem;
+  font-size: 1.0625rem;
   font-weight: 650;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 /* Hero -------------------------------------------------------------------- */
 
 .kin-hero {
-  padding: var(--space-12) var(--space-6);
-  background-color: color-mix(in srgb, var(--accent) 10%, var(--bg));
+  position: relative;
+  overflow: hidden;
+  padding: var(--kin-space-20) var(--space-6);
+  /* Two offset washes rather than a flat tint: the warm one sits under the
+     headline, the cooler one trails off to the right, which gives the band
+     some depth without an image. src/assets/hero.png is leftover Vite template
+     art — a purple abstract solid that suits neither the copy nor this palette
+     — so the hero is text-led by design. */
+  background:
+    radial-gradient(48rem 30rem at 12% 18%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 68%),
+    radial-gradient(40rem 26rem at 88% 92%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
+    color-mix(in srgb, var(--accent) 6%, var(--bg));
 }
 
 .kin-hero__inner {
+  position: relative;
   max-width: var(--kin-measure);
   margin: 0 auto;
 }
 
 .kin-hero__brand {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
   font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.3em;
   text-transform: uppercase;
 }
 
+.kin-hero__brand::before {
+  width: 2.5rem;
+  height: 2px;
+  flex: none;
+  border-radius: 1px;
+  background-color: var(--accent);
+  content: '';
+}
+
 .kin-hero__title {
-  margin-top: var(--space-4);
-  font-size: clamp(2rem, 6vw, 3.25rem);
+  max-width: 26rem;
+  margin-top: var(--space-6);
+  font-size: clamp(2.25rem, 7vw, 4rem);
   font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.05;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
   text-transform: uppercase;
+  text-wrap: balance;
 }
 
 .kin-hero__tagline {
-  margin-top: var(--space-4);
+  max-width: 30rem;
+  margin-top: var(--space-6);
   color: var(--accent);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 650;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  line-height: 1.5;
 }
 
 .kin-hero__lead {
   max-width: 34rem;
   margin-top: var(--space-4);
   color: var(--text-muted);
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
   line-height: 1.65;
+  text-wrap: pretty;
 }
 
 /* The three selling points under the hero CTA. A list, because that is what it
@@ -137,10 +219,13 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2) var(--space-4);
-  margin-top: var(--space-6);
+  margin-top: var(--kin-space-16);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--kin-hairline);
   color: var(--text-muted);
   font-size: 0.8125rem;
-  letter-spacing: 0.04em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -155,14 +240,45 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
   gap: var(--space-4);
-  margin-top: var(--space-8);
+  margin-top: var(--kin-space-16);
 }
 
 .kin-card {
+  position: relative;
+  overflow: hidden;
   padding: var(--space-6);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background-color: var(--surface);
+  transition:
+    transform var(--kin-duration) var(--kin-ease),
+    box-shadow var(--kin-duration) var(--kin-ease),
+    border-color var(--kin-duration) var(--kin-ease);
+}
+
+/* An accent bar that wipes in across the top edge on hover. Scaled from 0
+   rather than animating width, so it stays on the compositor. */
+.kin-card::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 2px;
+  background-color: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--kin-duration) var(--kin-ease);
+  content: '';
+}
+
+.kin-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  box-shadow: var(--shadow);
+}
+
+.kin-card:hover::before {
+  transform: scaleX(1);
 }
 
 .kin-card__title {
@@ -176,29 +292,38 @@
   margin-top: var(--space-3);
   color: var(--text-muted);
   font-size: 0.9375rem;
-  line-height: 1.6;
+  line-height: 1.65;
+  text-wrap: pretty;
 }
 
 /* Plain labelled list ----------------------------------------------------- */
 
 .kin-checklist {
-  max-width: 44rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: var(--space-2) var(--space-6);
+  max-width: var(--kin-measure);
   margin-top: var(--space-6);
   color: var(--text-muted);
-  line-height: 1.9;
 }
 
 .kin-checklist li {
-  padding-left: var(--space-4);
-  /* The source copy uses "•" literally. Rendering it as a marker instead keeps
-     the character out of the accessible name of each item. */
-  text-indent: calc(-1 * var(--space-4));
+  display: flex;
+  gap: var(--space-3);
+  align-items: baseline;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  line-height: 1.5;
 }
 
+/* The source copy uses "•" literally. Rendering it as a pseudo-element keeps
+   the character out of the accessible name of each item, and a chevron reads
+   as a checklist rather than a bulleted paragraph. */
 .kin-checklist li::before {
-  margin-right: var(--space-2);
+  flex: none;
   color: var(--accent);
-  content: '•';
+  font-size: 0.75rem;
+  content: '▸';
 }
 
 /* The short uppercase pill lists — "WHAT YOU EAT", "FOOD", "SLEEP" … */
@@ -211,41 +336,51 @@
 
 .kin-tag {
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
   border-radius: 999px;
-  background-color: var(--surface);
+  background-color: color-mix(in srgb, var(--accent) 7%, var(--surface));
   font-size: 0.75rem;
   font-weight: 650;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  transition:
+    background-color var(--kin-duration) var(--kin-ease),
+    border-color var(--kin-duration) var(--kin-ease);
+}
+
+.kin-tag:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background-color: color-mix(in srgb, var(--accent) 15%, var(--surface));
 }
 
 /* Numbered steps ---------------------------------------------------------- */
 
 .kin-steps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  gap: var(--space-6);
-  margin-top: var(--space-8);
-  /* An ordered list, so the numbers below are decoration of a real sequence
-     rather than the only thing conveying the order. */
-  counter-reset: none;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--space-8) var(--space-6);
+  margin-top: var(--kin-space-16);
 }
 
+/* The top rule fades left to right, so six of them in a row read as a sequence
+   rather than six separate boxes. */
 .kin-step {
   padding-top: var(--space-4);
-  border-top: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-top: 2px solid transparent;
+  border-image: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 15%, transparent)) 1;
 }
 
 .kin-step__number {
+  display: block;
   color: var(--accent);
-  font-size: 0.75rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
 .kin-step__title {
-  margin-top: var(--space-2);
+  margin-top: var(--space-3);
   font-size: 0.9375rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -256,34 +391,62 @@
   margin-top: var(--space-2);
   color: var(--text-muted);
   font-size: 0.9375rem;
-  line-height: 1.6;
+  line-height: 1.65;
+  text-wrap: pretty;
 }
 
 /* Practitioner ------------------------------------------------------------ */
 
 .kin-practitioner {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
   gap: var(--space-12);
   align-items: start;
-  margin-top: var(--space-8);
+  margin-top: var(--kin-space-16);
 }
 
 .kin-practitioner__card {
-  padding: var(--space-6);
-  border: 1px solid var(--border);
+  /* Sticky, so the name stays alongside the four paragraphs of bio as they
+     scroll past on a wide screen. Also the containing block for the watermark
+     below, which relative would otherwise provide. */
+  position: sticky;
+  top: 6rem;
+  overflow: hidden;
+  padding: var(--space-8) var(--space-6);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
   border-radius: var(--radius);
-  background-color: var(--surface);
+  background:
+    radial-gradient(20rem 14rem at 20% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%),
+    var(--surface);
   box-shadow: var(--shadow);
 }
 
+/* An oversized "K" watermark — the card holds only a name and a role, which
+   left it looking unfinished next to the column of bio text. */
+.kin-practitioner__card::after {
+  position: absolute;
+  right: -0.5rem;
+  bottom: -2.5rem;
+  color: color-mix(in srgb, var(--accent) 12%, transparent);
+  font-size: 9rem;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+  content: 'K';
+}
+
 .kin-practitioner__name {
-  font-size: 1.125rem;
+  position: relative;
+  font-size: 1.25rem;
   font-weight: 650;
+  letter-spacing: -0.01em;
 }
 
 .kin-practitioner__role {
-  margin-top: var(--space-2);
+  position: relative;
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--kin-hairline);
   color: var(--accent);
   font-size: 0.8125rem;
   font-weight: 650;
@@ -297,45 +460,72 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
   gap: var(--space-4);
-  margin-top: var(--space-8);
+  margin-top: var(--kin-space-16);
 }
 
 .kin-quote {
+  position: relative;
+  height: 100%;
   margin: 0;
-  padding: var(--space-6);
+  padding: var(--space-8) var(--space-6) var(--space-6);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background-color: var(--surface);
 }
 
+/* Decorative opening quote. aria-hidden is unnecessary on a pseudo-element —
+   it is not in the accessibility tree — and the real quotation marks stay in
+   the <blockquote> text. */
+.kin-quote::before {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-6);
+  color: color-mix(in srgb, var(--accent) 35%, transparent);
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1;
+  content: '\201C';
+}
+
 .kin-quote__text {
+  position: relative;
   color: var(--text);
   font-size: 1.0625rem;
   font-style: italic;
-  line-height: 1.6;
+  line-height: 1.65;
+  text-wrap: pretty;
 }
 
 .kin-quote__author {
   margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
   color: var(--text-muted);
-  font-size: 0.8125rem;
-  letter-spacing: 0.04em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 /* Free guide -------------------------------------------------------------- */
 
 .kin-guide {
-  max-width: var(--kin-measure);
+  max-width: 46rem;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-6);
-  border: 1px dashed var(--border);
+  padding: var(--space-12) var(--space-8);
+  border: 1px dashed color-mix(in srgb, var(--accent) 35%, var(--border));
   border-radius: var(--radius);
+  background: color-mix(in srgb, var(--accent) 5%, var(--surface));
   text-align: center;
 }
 
 /* Both carry a max-width for line length, which without auto margins would
-   pin them to the left of a centred block. */
+   pin them to the left of a centred block. The eyebrow is a flex row, so it
+   needs justify-content rather than auto margins. */
+.kin-guide .kin-eyebrow {
+  justify-content: center;
+}
+
 .kin-guide .kin-heading,
 .kin-guide .kin-lead {
   margin-right: auto;
@@ -347,15 +537,15 @@
    button so it does not invite a click that cannot go anywhere. */
 .kin-guide__cta {
   display: inline-block;
-  margin-top: var(--space-6);
-  padding: var(--space-2) var(--space-4);
+  margin-top: var(--space-8);
+  padding: var(--space-3) var(--space-6);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: 999px;
   background-color: var(--surface);
   color: var(--text-muted);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 650;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -365,8 +555,19 @@
   text-align: center;
 }
 
+.kin-final .kin-eyebrow {
+  justify-content: center;
+}
+
 .kin-final .kin-heading,
 .kin-final .kin-lead {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* display: table on .kin-refrain shrink-wraps it, which auto margins then
+   centre — text-align alone would not move the rule above it. */
+.kin-final .kin-refrain {
   margin-right: auto;
   margin-left: auto;
 }
@@ -378,11 +579,63 @@
   flex-wrap: wrap;
   gap: var(--space-3);
   align-items: center;
-  margin-top: var(--space-6);
+  margin-top: var(--space-8);
 }
 
 .kin-final .kin-actions {
   justify-content: center;
+}
+
+/* `.button` in index.css carries its own margin-top, which would stack on top
+   of the row's. Same fix `.button--cta` uses in layout.css. */
+.kin-actions .button {
+  margin-top: 0;
+  padding: var(--space-3) var(--space-6);
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition:
+    transform var(--kin-duration) var(--kin-ease),
+    box-shadow var(--kin-duration) var(--kin-ease),
+    background-color var(--kin-duration) var(--kin-ease);
+}
+
+.kin-actions .button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+/* Scroll reveal ----------------------------------------------------------- */
+/*
+ * Progressive enhancement, and structured so it can only ever add motion:
+ * the opacity: 0 lives *inside* the @supports, so a browser without
+ * scroll-driven animations never applies it and shows the page as normal
+ * rather than blank. The hero is excluded — it is above the fold on load and
+ * has nothing to animate in from.
+ */
+
+@keyframes kin-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .kin-section {
+      animation: kin-reveal linear both;
+      animation-timeline: view();
+      /* Finishes well before the section is centred, so reading never waits on
+         the animation. */
+      animation-range: entry 10% cover 28%;
+    }
+  }
 }
 
 /* Small screens ----------------------------------------------------------- */
@@ -393,17 +646,28 @@
     gap: var(--space-8);
   }
 
+  /* Sticky is meaningless in a single column — it would pin the name card over
+     the bio as you scroll past it. */
+  .kin-practitioner__card {
+    position: static;
+  }
+
+  .kin-page {
+    --kin-space-16: 3rem;
+    --kin-space-20: 3.5rem;
+  }
+
   .kin-section,
   .kin-hero {
-    padding: var(--space-8) var(--space-4);
+    padding: var(--kin-space-20) var(--space-4);
   }
 
   .kin-hero__point + .kin-hero__point {
     padding-left: 0;
     border-left: none;
   }
-}
 
-.kin-actions .button {
-  margin-top: 0;
+  .kin-checklist {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
