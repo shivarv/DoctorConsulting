@@ -95,13 +95,77 @@
 
 /* Footer ------------------------------------------------------------------ */
 
-.app__footer {
+.site-footer {
   margin-top: var(--space-12);
-  padding: var(--space-6);
   border-top: 1px solid var(--border);
+  background-color: var(--surface-hover);
+}
+
+.site-footer__inner {
+  display: grid;
+  /* The brand column gets more room than the three link columns, which hold
+     short labels and would otherwise stretch. */
+  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+  gap: var(--space-8);
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-6) var(--space-8);
+}
+
+.site-footer__name {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.site-footer__refrain {
+  margin-top: var(--space-2);
+  color: var(--accent);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.site-footer__note {
+  margin-top: var(--space-2);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.site-footer__heading {
+  color: var(--text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.site-footer__list {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.site-footer__link {
   color: var(--text-muted);
   font-size: 0.875rem;
-  text-align: center;
+  text-decoration: none;
+}
+
+.site-footer__link:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.site-footer__legal {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-6) var(--space-8);
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
 }
 
 /* Small screens ----------------------------------------------------------- */
@@ -133,5 +197,15 @@
 
   .site-nav--open {
     display: flex;
+  }
+
+  .site-footer__inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
+    padding: var(--space-8) var(--space-4) var(--space-6);
+  }
+
+  .site-footer__legal {
+    padding: var(--space-4) var(--space-4) var(--space-8);
   }
 }

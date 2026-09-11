@@ -7,7 +7,7 @@ const TABS = [
   { to: '/conditions', label: 'Conditions' },
   { to: '/shop', label: 'Shop' },
   { to: '/testimonials', label: 'Testimonials' },
-  { to: '/blog', label: 'Blog' },
+  { to: '/blog', label: 'KIN Journal' },
 ]
 
 export function SiteHeader() {
@@ -18,7 +18,7 @@ export function SiteHeader() {
       <div className="site-header__inner">
         <Link className="brand" to="/about" onClick={() => setMenuOpen(false)}>
           <span className="brand__mark" aria-hidden="true" />
-          <span className="brand__name">DoctorConsulting</span>
+          <span className="brand__name">KIN Wellness</span>
         </Link>
 
         <button

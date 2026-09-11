@@ -1,0 +1,409 @@
+/* KIN WELLNESS landing page ----------------------------------------------- */
+/*
+ * Deliberately not built on `.page` from index.css. That class caps width and
+ * pads the whole screen, which makes a full-bleed tinted band impossible — the
+ * band would stop short of the viewport edge. Here the *page* is full width and
+ * each section owns an inner container instead, so `--tinted` and `--accent`
+ * sections can run edge to edge while their text stays on the same measure as
+ * the rest of the site.
+ */
+
+.kin-page {
+  --kin-measure: 68rem;
+}
+
+/* Sections ---------------------------------------------------------------- */
+
+.kin-section {
+  padding: var(--space-12) var(--space-6);
+  /* .site-header is position: sticky, so a section scrolled to via its anchor
+     would come to rest underneath it. This reserves the header's height. */
+  scroll-margin-top: 4.5rem;
+}
+
+.kin-section__inner {
+  max-width: var(--kin-measure);
+  margin: 0 auto;
+}
+
+/* Alternating bands, so seventeen stacked sections do not read as one
+   undifferentiated column. Applied by the section components, not by
+   :nth-child — the order of sections on the page is not stable enough for a
+   positional rule to stay correct through an edit. */
+.kin-section--tinted {
+  background-color: var(--surface-hover);
+}
+
+.kin-section--accent {
+  background-color: color-mix(in srgb, var(--accent) 12%, var(--bg));
+}
+
+/* Section headings -------------------------------------------------------- */
+
+.kin-eyebrow {
+  display: block;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.kin-heading {
+  max-width: 34rem;
+  margin-top: var(--space-3);
+  font-size: clamp(1.5rem, 3.2vw, 2.125rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.kin-lead {
+  max-width: 44rem;
+  margin-top: var(--space-4);
+  color: var(--text-muted);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+.kin-body {
+  max-width: 44rem;
+  margin-top: var(--space-4);
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* The repeated "ROOT. REVIVE. THRIVE." / "PRACTICAL. PERSONAL. SUSTAINABLE."
+   style refrain — a statement, not a heading, so it is not an <h*>. */
+.kin-refrain {
+  margin-top: var(--space-8);
+  color: var(--text);
+  font-size: 1.125rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Hero -------------------------------------------------------------------- */
+
+.kin-hero {
+  padding: var(--space-12) var(--space-6);
+  background-color: color-mix(in srgb, var(--accent) 10%, var(--bg));
+}
+
+.kin-hero__inner {
+  max-width: var(--kin-measure);
+  margin: 0 auto;
+}
+
+.kin-hero__brand {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.kin-hero__title {
+  margin-top: var(--space-4);
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.kin-hero__tagline {
+  margin-top: var(--space-4);
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kin-hero__lead {
+  max-width: 34rem;
+  margin-top: var(--space-4);
+  color: var(--text-muted);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+/* The three selling points under the hero CTA. A list, because that is what it
+   is; the dividers are borders rather than literal bullet characters so they
+   can drop away on a narrow screen. */
+.kin-hero__points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-6);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.kin-hero__point + .kin-hero__point {
+  padding-left: var(--space-4);
+  border-left: 1px solid var(--border);
+}
+
+/* Cards ------------------------------------------------------------------- */
+
+.kin-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+}
+
+.kin-card {
+  padding: var(--space-6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+}
+
+.kin-card__title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.kin-card__body {
+  margin-top: var(--space-3);
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/* Plain labelled list ----------------------------------------------------- */
+
+.kin-checklist {
+  max-width: 44rem;
+  margin-top: var(--space-6);
+  color: var(--text-muted);
+  line-height: 1.9;
+}
+
+.kin-checklist li {
+  padding-left: var(--space-4);
+  /* The source copy uses "•" literally. Rendering it as a marker instead keeps
+     the character out of the accessible name of each item. */
+  text-indent: calc(-1 * var(--space-4));
+}
+
+.kin-checklist li::before {
+  margin-right: var(--space-2);
+  color: var(--accent);
+  content: '•';
+}
+
+/* The short uppercase pill lists — "WHAT YOU EAT", "FOOD", "SLEEP" … */
+.kin-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+
+.kin-tag {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background-color: var(--surface);
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Numbered steps ---------------------------------------------------------- */
+
+.kin-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+  /* An ordered list, so the numbers below are decoration of a real sequence
+     rather than the only thing conveying the order. */
+  counter-reset: none;
+}
+
+.kin-step {
+  padding-top: var(--space-4);
+  border-top: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.kin-step__number {
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.kin-step__title {
+  margin-top: var(--space-2);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kin-step__body {
+  margin-top: var(--space-2);
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/* Practitioner ------------------------------------------------------------ */
+
+.kin-practitioner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: var(--space-12);
+  align-items: start;
+  margin-top: var(--space-8);
+}
+
+.kin-practitioner__card {
+  padding: var(--space-6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.kin-practitioner__name {
+  font-size: 1.125rem;
+  font-weight: 650;
+}
+
+.kin-practitioner__role {
+  margin-top: var(--space-2);
+  color: var(--accent);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Testimonials ------------------------------------------------------------ */
+
+.kin-quotes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+}
+
+.kin-quote {
+  margin: 0;
+  padding: var(--space-6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+}
+
+.kin-quote__text {
+  color: var(--text);
+  font-size: 1.0625rem;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.kin-quote__author {
+  margin-top: var(--space-4);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Free guide -------------------------------------------------------------- */
+
+.kin-guide {
+  max-width: var(--kin-measure);
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+/* Both carry a max-width for line length, which without auto margins would
+   pin them to the left of a centred block. */
+.kin-guide .kin-heading,
+.kin-guide .kin-lead {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Not a link: the guide does not exist yet, so this is the label on its own
+   until there is a file to download. Styled as a static token rather than a
+   button so it does not invite a click that cannot go anywhere. */
+.kin-guide__cta {
+  display: inline-block;
+  margin-top: var(--space-6);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Final call to action ---------------------------------------------------- */
+
+.kin-final {
+  text-align: center;
+}
+
+.kin-final .kin-heading,
+.kin-final .kin-lead {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Actions ----------------------------------------------------------------- */
+
+.kin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  margin-top: var(--space-6);
+}
+
+.kin-final .kin-actions {
+  justify-content: center;
+}
+
+/* Small screens ----------------------------------------------------------- */
+
+@media (max-width: 60rem) {
+  .kin-practitioner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+
+  .kin-section,
+  .kin-hero {
+    padding: var(--space-8) var(--space-4);
+  }
+
+  .kin-hero__point + .kin-hero__point {
+    padding-left: 0;
+    border-left: none;
+  }
+}
+
+.kin-actions .button {
+  margin-top: 0;
+}

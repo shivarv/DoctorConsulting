@@ -1,71 +1,54 @@
-import { Link } from 'react-router-dom'
+import { ApproachSection } from '../features/marketing/components/ApproachSection'
+import { AyurvedaSection } from '../features/marketing/components/AyurvedaSection'
+import { CareAreasSection } from '../features/marketing/components/CareAreasSection'
+import { DietLifestyleSection } from '../features/marketing/components/DietLifestyleSection'
+import { FinalCtaSection } from '../features/marketing/components/FinalCtaSection'
+import { FreeGuideSection } from '../features/marketing/components/FreeGuideSection'
+import { HeroSection } from '../features/marketing/components/HeroSection'
+import { JournalSection } from '../features/marketing/components/JournalSection'
+import { JourneySection } from '../features/marketing/components/JourneySection'
+import { LifestyleSection } from '../features/marketing/components/LifestyleSection'
+import { OnlineConsultationSection } from '../features/marketing/components/OnlineConsultationSection'
+import { PersonalYogaSection } from '../features/marketing/components/PersonalYogaSection'
+import { PractitionerSection } from '../features/marketing/components/PractitionerSection'
+import { ProgramsSection } from '../features/marketing/components/ProgramsSection'
+import { TestimonialsSection } from '../features/marketing/components/TestimonialsSection'
+import { VideoLibrarySection } from '../features/marketing/components/VideoLibrarySection'
+import { WellbeingSection } from '../features/marketing/components/WellbeingSection'
 
-/** The three Coimbatore branches. Addresses are placeholders until confirmed. */
-const LOCATIONS = [
-  { id: 'one', name: 'Coimbatore — Branch One', address: 'Address to be confirmed' },
-  { id: 'two', name: 'Coimbatore — Branch Two', address: 'Address to be confirmed' },
-  { id: 'three', name: 'Coimbatore — Branch Three', address: 'Address to be confirmed' },
-]
-
+/**
+ * The KIN Wellness landing page.
+ *
+ * Also the site's entry point — `/` redirects here in App.tsx — so this is
+ * both "about us" and the front page. Every section is its own component
+ * under features/marketing, for two reasons: seventeen sections inline would
+ * be an 800-line file nobody edits confidently, and if Home and About are
+ * later split into separate routes the split is a matter of moving lines in
+ * this list rather than carving up a monolith.
+ *
+ * The order below is the page. Section ids are the anchor targets used by the
+ * in-page CTAs and by the footer's quick links.
+ */
 export function AboutPage() {
   return (
-    <main className="page">
-      <header className="page__header">
-        <span className="badge">Ayurveda · Coimbatore</span>
-        <h1 className="page__title">Traditional Ayurvedic care, now a consultation away</h1>
-        <p className="page__subtitle">
-          We have practised Ayurveda in Coimbatore for years, across three clinics in the
-          city. This is where that same care opens up online — consult our physicians from
-          wherever you are, and come in to a branch when treatment calls for it.
-        </p>
-      </header>
-
-      <section className="about-section">
-        <h2 className="about-section__title">Who we are</h2>
-        <p className="about-section__body">
-          Ayurveda treats the person rather than the complaint alone. Our physicians work
-          through diet, routine, herbal preparations and therapy — looking for what is
-          driving a condition instead of quieting its symptoms and leaving the cause in
-          place.
-        </p>
-        <p className="about-section__body">
-          Much of what we see is long-standing: conditions people have carried for years
-          and managed rather than resolved. That work takes time and follow-up, which is
-          exactly what consulting online makes easier to sustain.
-        </p>
-      </section>
-
-      <section className="about-section">
-        <h2 className="about-section__title">Where to find us</h2>
-        <p className="about-section__body">
-          Three clinics across Coimbatore, for consultations and treatments that are best
-          done in person.
-        </p>
-        <ul className="about-locations">
-          {LOCATIONS.map((location) => (
-            <li key={location.id} className="about-location">
-              <h3 className="about-location__name">{location.name}</h3>
-              <p className="about-location__address">{location.address}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="about-section">
-        <h2 className="about-section__title">Consulting online</h2>
-        <p className="about-section__body">
-          Browse our physicians, read what each of them treats, and book a time that suits
-          you. No travel, no waiting room.
-        </p>
-        <div className="about-actions">
-          <Link className="button" to="/doctors">
-            Meet our doctors
-          </Link>
-          <Link className="button button--ghost" to="/book">
-            Book a consultation
-          </Link>
-        </div>
-      </section>
+    <main className="kin-page">
+      <HeroSection />
+      <WellbeingSection />
+      <ApproachSection />
+      <AyurvedaSection />
+      <CareAreasSection />
+      <DietLifestyleSection />
+      <LifestyleSection />
+      <PersonalYogaSection />
+      <JourneySection />
+      <ProgramsSection />
+      <PractitionerSection />
+      <OnlineConsultationSection />
+      <JournalSection />
+      <VideoLibrarySection />
+      <FreeGuideSection />
+      <TestimonialsSection />
+      <FinalCtaSection />
     </main>
   )
 }
