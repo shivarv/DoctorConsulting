@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 
+import { BrandMark } from './BrandMark'
+
 const TABS = [
   { to: '/about', label: 'About' },
   { to: '/doctors', label: 'Our Doctors' },
@@ -17,7 +19,7 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="site-header__inner">
         <Link className="brand" to="/about" onClick={() => setMenuOpen(false)}>
-          <span className="brand__mark" aria-hidden="true" />
+          <BrandMark className="brand__mark" />
           <span className="brand__name">KIN Wellness</span>
         </Link>
 

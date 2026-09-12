@@ -39,11 +39,18 @@
   white-space: nowrap;
 }
 
+/* An <svg>, not a <span>, since BrandMark replaced the placeholder disc that
+   used to live here. It fills currentColor, so the colour below is what makes
+   the chevron green — and --accent is redefined for dark mode in index.css,
+   which is why this is not the logo's own fixed forest green.
+
+   display: block stops the inline baseline gap from nudging it off centre
+   against the wordmark. */
 .brand__mark {
+  display: block;
   width: 1.5rem;
   height: 1.5rem;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 55%, white));
+  color: var(--accent);
 }
 
 .site-nav {
