@@ -6,6 +6,18 @@
 # This workflow — not Render's own Auto-Deploy setting — is what deploys.
 # Leave Auto-Deploy On in the dashboard and both fire on every push, with
 # Render's copy not waiting for the tests.
+#
+# Three repository secrets are required, all copied out of the Render
+# dashboard (Settings → Secrets and variables → Actions → Secrets tab):
+#
+#   RENDER_DEPLOY_BACKEND   doctorconsulting-api → Settings → Deploy Hook
+#   RENDER_DEPLOY_UI        doctorconsulting-web → Settings → Deploy Hook
+#   RENDER_DEPLOY_DATABASE  doctorconsulting-db  → External Database URL
+#
+# The first two are secret URLs that already identify their service; the third
+# is a connection string. All three are credentials, so none belongs in the
+# Variables tab — a variable is readable by anyone with repo access and is not
+# masked in job logs.
 
 name: CI
 
@@ -112,14 +124,36 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
+      # The curl steps below need no working copy, but db/bootstrap.sh does.
+      - uses: actions/checkout@v4
+
+      # Schema before code, so the API that deploys next never queries a column
+      # that is not there yet.
+      #
+      # Safe to run on every merge: db/schema.sql guards every statement with
+      # IF NOT EXISTS and db/seed_doctors.sql upserts every row, so an
+      # unchanged schema makes this a no-op. What it does not do is ALTER or
+      # drop anything — a renamed or retyped column still needs a hand-written
+      # migration, and this step will not tell you that it skipped one.
+      - name: Apply schema and demo data
+        env:
+          # Render's *External* database URL. The internal one resolves only
+          # from inside Render's own network, so a GitHub runner cannot reach
+          # it. psql itself is preinstalled on ubuntu-latest.
+          #
+          # Unset, this fails with the script's usage message rather than
+          # loading nothing and passing.
+          DATABASE_URL: ${{ secrets.RENDER_DEPLOY_DATABASE }}
+        run: ./db/bootstrap.sh
+
       - name: Trigger API deploy
         # Each hook is a secret URL that already identifies the service.
         # --fail-with-body turns an HTTP 4xx/5xx into a non-zero exit, so a
         # revoked or mistyped hook fails the job instead of silently passing.
-        run: curl --fail-with-body -sS -X POST "${{ secrets.RENDER_DEPLOY_HOOK_API }}"
+        run: curl --fail-with-body -sS -X POST "${{ secrets.RENDER_DEPLOY_BACKEND }}"
 
       - name: Trigger frontend deploy
-        run: curl --fail-with-body -sS -X POST "${{ secrets.RENDER_DEPLOY_HOOK_WEB }}"
+        run: curl --fail-with-body -sS -X POST "${{ secrets.RENDER_DEPLOY_UI }}"
 
       # The hook returns as soon as Render accepts the job, so green here means
       # "deploy started", not "deploy succeeded".
